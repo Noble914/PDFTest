@@ -1,18 +1,13 @@
 name: PDF Generate and upload
 
 on:  
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   schedule:  
-    # Runs every 3 minutes or every day
-    - cron: '*/3 * * * *'  
-  push:  
-    paths:  
-      - 'quarto-config/**'  
-      - 'tinytex-config/**'  
-    branches:  
-      - main  
-  pull_request:  
-    branches:  
-      - main  
+    # Runs every 3 minutes  
+    - cron: '*/5 * * * *' 
 jobs:  
   setup-and-run:  
     runs-on: ubuntu-latest  
