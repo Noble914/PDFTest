@@ -6,8 +6,16 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:  
-    # Runs every 3 minutes  
-    - cron: '*/10 * * * *' 
+    #┌───────────── minute (0 - 59)  
+    #│ ┌───────────── hour (0 - 23)  
+    #│ │ ┌───────────── day of the month (1 - 31)  
+    #│ │ │ ┌───────────── month (1 - 12)  
+    #│ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday; 7 is also Sunday)  
+    #│ │ │ │ │  
+    #* * * * *  
+    
+    # Runs at 9:00 AM UTC every day.(min time is 5 min. */10 * * * * means every 10 min)
+    - cron: '0 9 * * *'  
 jobs:  
   setup-and-run:  
     runs-on: ubuntu-latest  
