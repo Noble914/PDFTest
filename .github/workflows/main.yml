@@ -8,8 +8,11 @@ on:
     paths:  
       - 'quarto-config/**'  
       - 'tinytex-config/**'  
-    branches: [ "main" ]  
-
+    branches:  
+      - main  
+  pull_request:  
+    branches:  
+      - main  
 jobs:  
   setup-and-run:  
     runs-on: ubuntu-latest  
