@@ -1,0 +1,49 @@
+name: PDF Generate and upload
+
+on:  
+  schedule:  
+    # Runs every 3 minutes or every day
+    - cron: '*/3 * * * *'  
+  push:  
+    paths:  
+      - 'quarto-config/**'  
+      - 'tinytex-config/**'  
+    branches: [ "main" ]  
+
+jobs:  
+  setup-and-run:  
+    runs-on: ubuntu-latest  
+
+    steps:  
+    - uses: actions/checkout@v4  
+    - name: Set up Python 3.8  
+      uses: actions/setup-python@v2  
+      with:  
+        python-version: "3.8"  
+    - name: Cache Python dependencies  
+      uses: actions/cache@v3  
+      with:  
+        path: ~/.cache/pip  
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}  
+        restore-keys: |  
+          ${{ runner.os }}-pip-  
+    - name: Install Quarto  
+      if: steps.cache-quarto.outputs.cache-hit != 'true'  
+      run: |  
+        wget -qO /tmp/quarto.deb "https://github.com/quarto-dev/quarto-cli/releases/download/v1.5.57/quarto-1.5.57-linux-amd64.deb" && sudo dpkg -i /tmp/quarto.deb  
+      id: quarto-install  
+    - name: Install TinyTeX  
+      if: steps.cache-tinytex.outputs.cache-hit != 'true'  
+      run: |  
+        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh  
+        export PATH=$PATH:$HOME/.TinyTeX/bin/x86_64-linux  
+        tlmgr install xetex  
+      id: tinytex-install  
+    - name: Install dependencies  
+      run: |  
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi  
+    - name: Run Python Script  
+      env:  
+        SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}  
+        SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+      run: python test.py  
